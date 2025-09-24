@@ -13,6 +13,7 @@ func SetupRouter() *gin.Engine {
 
 	docs.SwaggerInfo.BasePath="/"
 	r.POST("/expenses",controller.CreateExpenses)
+	r.DELETE("/expenses/:id",controller.DeleteExpences)
 
 	return r
 }
