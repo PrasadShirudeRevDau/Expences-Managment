@@ -14,7 +14,9 @@ func DatabaseConnection() *gorm.DB{
 	if err !=nil {
 		fmt.Println("Database not connected")
 	}
-
-	db.AutoMigrate(&models.Expense{})
+	
+	db.AutoMigrate(&models.User{})
+	db.AutoMigrate(&models.Expense{})	
+	
 	return db
 }

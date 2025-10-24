@@ -8,6 +8,10 @@ import (
     ginSwagger "github.com/swaggo/gin-swagger"
 	
 )
+// @securityDefinitions.apikey BearerAuth
+// @in header
+// @name Authorization
+// @description Type "Bearer" followed by a space and JWT token.
 
 func main() {
 	config.DatabaseConnection()

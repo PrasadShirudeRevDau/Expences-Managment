@@ -14,8 +14,9 @@ import (
 //@Tags expenses
 //@Accept json
 //@Produce json
+//@Security BearerAuth
 //@Param id path string true "expense id"
-//@Router /expenses/{id} [delete]
+//@Router /api/expenses/{id} [delete]
 func DeleteExpences(c *gin.Context) {
 	id:=c.Param("id")
 	var expense models.Expense

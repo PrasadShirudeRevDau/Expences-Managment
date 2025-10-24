@@ -15,8 +15,13 @@ const docTemplate = `{
     "host": "{{.Host}}",
     "basePath": "{{.BasePath}}",
     "paths": {
-        "/expenses": {
+        "/api/expenses": {
             "post": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
                 "description": "Create an new expenses",
                 "consumes": [
                     "application/json"
@@ -42,8 +47,13 @@ const docTemplate = `{
                 "responses": {}
             }
         },
-        "/expenses/all": {
+        "/api/expenses/all": {
             "get": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
                 "description": "get all expenses",
                 "consumes": [
                     "application/json"
@@ -58,33 +68,13 @@ const docTemplate = `{
                 "responses": {}
             }
         },
-        "/expenses/category": {
+        "/api/expenses/category/all": {
             "get": {
-                "description": "user can get expense by category",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "expenses"
-                ],
-                "summary": "get expense by category",
-                "parameters": [
+                "security": [
                     {
-                        "type": "string",
-                        "description": "category",
-                        "name": "category",
-                        "in": "query",
-                        "required": true
+                        "BearerAuth": []
                     }
                 ],
-                "responses": {}
-            }
-        },
-        "/expenses/category/all": {
-            "get": {
                 "description": "get all categories",
                 "consumes": [
                     "application/json"
@@ -99,9 +89,14 @@ const docTemplate = `{
                 "responses": {}
             }
         },
-        "/expenses/date": {
+        "/api/expenses/filter": {
             "get": {
-                "description": "get expenses by date",
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "get expenses by date and category",
                 "consumes": [
                     "application/json"
                 ],
@@ -111,28 +106,43 @@ const docTemplate = `{
                 "tags": [
                     "expenses"
                 ],
-                "summary": "get expense by date",
+                "summary": "get expense",
                 "parameters": [
+                    {
+                        "type": "string",
+                        "description": "id",
+                        "name": "id",
+                        "in": "query"
+                    },
                     {
                         "type": "string",
                         "description": "Start date (YYYY-MM-DD)",
                         "name": "from",
-                        "in": "query",
-                        "required": true
+                        "in": "query"
                     },
                     {
                         "type": "string",
                         "description": "End date (YYYY-MM-DD)",
                         "name": "to",
-                        "in": "query",
-                        "required": true
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "category",
+                        "name": "category",
+                        "in": "query"
                     }
                 ],
                 "responses": {}
             }
         },
-        "/expenses/{id}": {
+        "/api/expenses/{id}": {
             "get": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
                 "description": "get single expense by id",
                 "consumes": [
                     "application/json"
@@ -156,6 +166,11 @@ const docTemplate = `{
                 "responses": {}
             },
             "delete": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
                 "description": "delete expense by id",
                 "consumes": [
                     "application/json"
@@ -179,6 +194,11 @@ const docTemplate = `{
                 "responses": {}
             },
             "patch": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
                 "description": "update amount by id",
                 "consumes": [
                     "application/json"
@@ -210,6 +230,65 @@ const docTemplate = `{
                 ],
                 "responses": {}
             }
+        },
+        "/auth/Login": {
+            "post": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "authenticate the user",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "user"
+                ],
+                "summary": "authenticate the user",
+                "parameters": [
+                    {
+                        "description": "Login user",
+                        "name": "body",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/controller.UserAuth"
+                        }
+                    }
+                ],
+                "responses": {}
+            }
+        },
+        "/auth/register": {
+            "post": {
+                "description": "Create an new user",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "user"
+                ],
+                "summary": "Create user",
+                "parameters": [
+                    {
+                        "description": "New user",
+                        "name": "body",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/controller.UserAuth"
+                        }
+                    }
+                ],
+                "responses": {}
+            }
         }
     },
     "definitions": {
@@ -221,7 +300,7 @@ const docTemplate = `{
                     "format": "float64"
                 },
                 "category": {
-                    "type": "string"
+                    "$ref": "#/definitions/models.ExpenseCategory"
                 },
                 "date": {
                     "type": "string"
@@ -238,6 +317,58 @@ const docTemplate = `{
                     "type": "number"
                 }
             }
+        },
+        "controller.UserAuth": {
+            "type": "object",
+            "properties": {
+                "password": {
+                    "type": "string"
+                },
+                "username": {
+                    "type": "string"
+                }
+            }
+        },
+        "models.ExpenseCategory": {
+            "type": "string",
+            "enum": [
+                "Housing",
+                "Utilities",
+                "Transportation",
+                "Food_Groceries",
+                "Health_Fitness",
+                "Entertainment",
+                "Education",
+                "Clothing",
+                "Personal_Care",
+                "Gifts_Donation",
+                "Travel_Vacation",
+                "Insurance",
+                "Miscellaneous"
+            ],
+            "x-enum-varnames": [
+                "Housing",
+                "Utilities",
+                "Transportation",
+                "Food_Groceries",
+                "Health_Fitness",
+                "Entertainment",
+                "Education",
+                "Clothing",
+                "Personal_Care",
+                "Gifts_Donation",
+                "Travel_Vacation",
+                "Insurance",
+                "Miscellaneous"
+            ]
+        }
+    },
+    "securityDefinitions": {
+        "BearerAuth": {
+            "description": "Type \"Bearer\" followed by a space and JWT token.",
+            "type": "apiKey",
+            "name": "Authorization",
+            "in": "header"
         }
     }
 }`
