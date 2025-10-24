@@ -5,7 +5,7 @@ definitions:
         format: float64
         type: number
       category:
-        type: string
+        $ref: '#/definitions/models.ExpenseCategory'
       date:
         type: string
       note:
@@ -16,10 +16,47 @@ definitions:
       amount:
         type: number
     type: object
+  controller.UserAuth:
+    properties:
+      password:
+        type: string
+      username:
+        type: string
+    type: object
+  models.ExpenseCategory:
+    enum:
+    - Housing
+    - Utilities
+    - Transportation
+    - Food_Groceries
+    - Health_Fitness
+    - Entertainment
+    - Education
+    - Clothing
+    - Personal_Care
+    - Gifts_Donation
+    - Travel_Vacation
+    - Insurance
+    - Miscellaneous
+    type: string
+    x-enum-varnames:
+    - Housing
+    - Utilities
+    - Transportation
+    - Food_Groceries
+    - Health_Fitness
+    - Entertainment
+    - Education
+    - Clothing
+    - Personal_Care
+    - Gifts_Donation
+    - Travel_Vacation
+    - Insurance
+    - Miscellaneous
 info:
   contact: {}
 paths:
-  /expenses:
+  /api/expenses:
     post:
       consumes:
       - application/json
@@ -34,10 +71,12 @@ paths:
       produces:
       - application/json
       responses: {}
+      security:
+      - BearerAuth: []
       summary: Create expense
       tags:
       - expenses
-  /expenses/{id}:
+  /api/expenses/{id}:
     delete:
       consumes:
       - application/json
@@ -51,6 +90,8 @@ paths:
       produces:
       - application/json
       responses: {}
+      security:
+      - BearerAuth: []
       summary: delete expense
       tags:
       - expenses
@@ -67,6 +108,8 @@ paths:
       produces:
       - application/json
       responses: {}
+      security:
+      - BearerAuth: []
       summary: get single expense
       tags:
       - expenses
@@ -89,10 +132,12 @@ paths:
       produces:
       - application/json
       responses: {}
+      security:
+      - BearerAuth: []
       summary: update expense amount
       tags:
       - expenses
-  /expenses/all:
+  /api/expenses/all:
     get:
       consumes:
       - application/json
@@ -100,27 +145,12 @@ paths:
       produces:
       - application/json
       responses: {}
+      security:
+      - BearerAuth: []
       summary: read all expense
       tags:
       - expenses
-  /expenses/category:
-    get:
-      consumes:
-      - application/json
-      description: user can get expense by category
-      parameters:
-      - description: category
-        in: query
-        name: category
-        required: true
-        type: string
-      produces:
-      - application/json
-      responses: {}
-      summary: get expense by category
-      tags:
-      - expenses
-  /expenses/category/all:
+  /api/expenses/category/all:
     get:
       consumes:
       - application/json
@@ -128,29 +158,83 @@ paths:
       produces:
       - application/json
       responses: {}
+      security:
+      - BearerAuth: []
       summary: show all categories
       tags:
       - categories
-  /expenses/date:
+  /api/expenses/filter:
     get:
       consumes:
       - application/json
-      description: get expenses by date
+      description: get expenses by date and category
       parameters:
+      - description: id
+        in: query
+        name: id
+        type: string
       - description: Start date (YYYY-MM-DD)
         in: query
         name: from
-        required: true
         type: string
       - description: End date (YYYY-MM-DD)
         in: query
         name: to
-        required: true
+        type: string
+      - description: category
+        in: query
+        name: category
         type: string
       produces:
       - application/json
       responses: {}
-      summary: get expense by date
+      security:
+      - BearerAuth: []
+      summary: get expense
       tags:
       - expenses
+  /auth/Login:
+    post:
+      consumes:
+      - application/json
+      description: authenticate the user
+      parameters:
+      - description: Login user
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/controller.UserAuth'
+      produces:
+      - application/json
+      responses: {}
+      security:
+      - BearerAuth: []
+      summary: authenticate the user
+      tags:
+      - user
+  /auth/register:
+    post:
+      consumes:
+      - application/json
+      description: Create an new user
+      parameters:
+      - description: New user
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/controller.UserAuth'
+      produces:
+      - application/json
+      responses: {}
+      summary: Create user
+      tags:
+      - user
+securityDefinitions:
+  BearerAuth:
+    description: Type "Bearer" followed by a space and JWT token.
+    in: header
+    name: Authorization
+    type: apiKey
 swagger: "2.0"

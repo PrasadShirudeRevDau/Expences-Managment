@@ -11,7 +11,7 @@ import (
 
 type CreateInput struct {
 	Amount   float64
-	Category string
+	Category models.ExpenseCategory
 	Date     string
 	Note     string
 }
@@ -21,8 +21,9 @@ type CreateInput struct {
 //@Tags expenses
 //@Accept json
 //@Produce json
+//@Security BearerAuth
 //@Param body body CreateInput true "New expense"
-//@Router /expenses [post]
+//@Router /api/expenses [post]
 func CreateExpenses(c *gin.Context) {
 	db := config.DatabaseConnection()
 	var input CreateInput
@@ -66,7 +67,8 @@ func CreateExpenses(c *gin.Context) {
 		return
 	}
 
-	expense := models.Expense{
+	expense := models.Expense{ 
+		UserID: c.GetUint("user_id"),
 		Amount:   input.Amount,
 		Category: models.ExpenseCategory(input.Category),
 		Date:     parseDate,

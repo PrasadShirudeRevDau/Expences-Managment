@@ -12,7 +12,8 @@ import (
 //@Tags categories
 //@Accept json
 //@Produce json
-//@Router /expenses/category/all [get]
+//@Security BearerAuth
+//@Router /api/expenses/category/all [get]
 func GetCategory(c *gin.Context) {
 	categories:=models.GetAllCategories()
 	c.JSON(http.StatusOK,gin.H{"category": categories})

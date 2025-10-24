@@ -3,36 +3,42 @@ package controller
 import (
 	config "ExpencesManagment/Config"
 	models "ExpencesManagment/Models"
-	"fmt"
 	"net/http"
 
 	"github.com/gin-gonic/gin"
 )
 
-var expenses []models.Expense
 var db = config.DatabaseConnection()
-//GetAllExpenses godoc
-//@Summary read all expense
-//@Description get all expenses
-//@Tags expenses
-//@Accept json
-//@Produce json
-//@Router /expenses/all [get]
-func GetAllExpences(c *gin.Context) {
 
-	if err := db.Find(&expenses); err != nil {
-		c.JSON(http.StatusOK, expenses)
+// GetAllExpenses godoc
+// @Summary read all expense
+// @Description get all expenses
+// @Tags expenses
+// @Accept json
+// @Produce json
+// @Security BearerAuth
+// @Router /api/expenses/all [get]
+func GetAllExpences(c *gin.Context) {
+	userID := c.GetUint("user_id")
+	var expense []models.Expense
+	result := db.Where("user_id =?", userID).Find(&expense)
+
+	if result.Error != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": result.Error.Error()})
 		return
 	}
+	c.JSON(http.StatusOK, expense)
 }
-//GetExpenseById godoc
-//@Summary get single expense
-//@Description get single expense by id
-//@Tags expenses
-//@Accept json
-//@Produce json
-//@Param id path string true "Expense ID"
-//@Router /expenses/{id} [get]
+
+// GetExpenseById godoc
+// @Summary get single expense
+// @Description get single expense by id
+// @Tags expenses
+// @Accept json
+// @Produce json
+// @Security BearerAuth
+// @Param id path string true "Expense ID"
+// @Router /api/expenses/{id} [get]
 func GetExpenseById(c *gin.Context) {
 	id := c.Param("id")
 	var expense models.Expense
@@ -43,88 +49,88 @@ func GetExpenseById(c *gin.Context) {
 	}
 
 	c.JSON(http.StatusOK, expense)
-	fmt.Println("Expense ID:", expense.Id)
 }
 
-//@Summary get expense by date
-//@Description get expenses by date
-//@Tags expenses
-//@Accept json
-//@Produce json
-//@Param from query string true "Start date (YYYY-MM-DD)"
-//@Param to query string true "End date (YYYY-MM-DD)"
-//@Router /expenses/date [get]
-func GetExpenseByDate(c *gin.Context) {
-	From:=c.Query("from")
-	To:=c.Query("to")
+// @Summary get expense
+// @Description get expenses by date and category
+// @Tags expenses
+// @Accept json
+// @Produce json
+// @Security BearerAuth
+// @Param id query string false "id"
+// @Param from query string false "Start date (YYYY-MM-DD)"
+// @Param to query string false "End date (YYYY-MM-DD)"
+// @Param category query string false "category"
+// @Router /api/expenses/filter [get]
+func GetExpenseByFilter(c *gin.Context) {
+	id := c.Query("id")
+	From := c.Query("from")
+	To := c.Query("to")
+	category := c.Query("category")
 
-	if From == "" || To ==""{
-		c.JSON(http.StatusBadRequest,gin.H{"error":"From and To dates are required"})
-		return 
+	var expenses []models.Expense
+	query := db.Model(&models.Expense{})
+
+	if id != "" {
+		query = query.Where("id = ?", id)
 	}
-	var expense []models.Expense
 
-	if err:=db.Where("date between ? and ?",From,To).Find(&expense).Error; err !=nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error":err.Error()})
+	if From != "" && To != "" {
+		query = query.Where("date between ? and ?", From, To)
+	} else if From != "" || To != "" {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Both dates are required"})
 		return
 	}
 
-	if len(expense)==0 {
-		c.JSON(http.StatusNotFound,gin.H{"error":"No Expense founded"})
-		return
-	}
-
-	c.JSON(http.StatusOK, expense)
-}
-
-//@Summary get expense by category
-//@Description user can get expense by category
-//@Tags expenses
-//@Accept json
-//@Produce json
-//@Param category query string true "category"
-//@Router /expenses/category [get]
-func GetExpensesByCategory (c *gin.Context) {
-	category:=c.Query("category")
-	
-	if category==""{
-		c.JSON(http.StatusNotFound,gin.H{"error":"Category is empty"})
-		return
-	}
-	var expense []models.Expense
-
-	isValid:=false
-	ValidCateories := []models.ExpenseCategory{
-		models.Clothing,
-		models.Education,
-		models.Entertainment,
-		models.Food_Groceries,
-		models.Gifts_Donation,
-		models.Health_Fitness,
-		models.Housing,
-		models.Insurance,
-		models.Miscellaneous,
-		models.Personal_Care,
-		models.Transportation,
-		models.Travel_Vacation,
-		models.Utilities,
-	}
-
-	for _,ValidCategory := range ValidCateories{
-		if ValidCategory == models.ExpenseCategory(category){
-			isValid=true
-			break
+	if category != "" {
+		ValidCateories := []models.ExpenseCategory{
+			models.Clothing,
+			models.Education,
+			models.Entertainment,
+			models.Food_Groceries,
+			models.Gifts_Donation,
+			models.Health_Fitness,
+			models.Housing,
+			models.Insurance,
+			models.Miscellaneous,
+			models.Personal_Care,
+			models.Transportation,
+			models.Travel_Vacation,
+			models.Utilities,
 		}
+
+		isValid := false
+
+		for _, ValidCategory := range ValidCateories {
+			if ValidCategory == models.ExpenseCategory(category) {
+				isValid = true
+				break
+			}
+		}
+
+		if !isValid {
+			c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid category"})
+			return
+		}
+
+		query = query.Where("category = ?", category)
 	}
 
-	if !isValid {
-		c.JSON(http.StatusBadRequest,gin.H{"error":"Invalid category"})
-		return 
-	}
-
-	if err := db.Where("category = ?",category).Find(&expense).Error; err !=nil {
-		c.JSON(http.StatusNotFound,gin.H{"error":err.Error()})
+	if id == "" && From == "" && To == "" && category == "" {
+		c.JSON(http.StatusBadRequest, gin.H{"error":"enter atlest one valid value"})
 		return
 	}
-	c.JSON(http.StatusOK, expense)
+
+	if err := query.Find(&expenses).Error; err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+
+	if len(expenses) == 0 {
+		c.JSON(http.StatusNotFound, gin.H{"error": "No Expense founded"})
+		return
+	}
+
+	c.JSON(http.StatusOK, expenses)
+
 }
