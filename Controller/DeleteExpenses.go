@@ -8,7 +8,14 @@ import (
 
 	"github.com/gin-gonic/gin"
 )
-
+//DeleteExpenses godoc
+//@Summary delete expense
+//@Description delete expense by id
+//@Tags expenses
+//@Accept json
+//@Produce json
+//@Param id path string true "expense id"
+//@Router /expenses/{id} [delete]
 func DeleteExpences(c *gin.Context) {
 	id:=c.Param("id")
 	var expense models.Expense
@@ -19,7 +26,7 @@ func DeleteExpences(c *gin.Context) {
 		return 
 	}
 
-	if err:=config.DatabaseConnection().Where("id = ?",uint(ExpenseID)).First(&expense).Error;err !=nil {
+	if err:=config.DatabaseConnection().Where("id = ?", ExpenseID).First(&expense).Error;err !=nil {
 		c.JSON(http.StatusNotFound, gin.H{"error": "Expense not found"})
 		return
 	}
@@ -27,5 +34,6 @@ func DeleteExpences(c *gin.Context) {
 		c.JSON(http.StatusInternalServerError, gin.H{"error":"Failed to delete expenses"})
 		return 
 	}
+	c.JSON(http.StatusOK,"Expense delete succesfully")
 
 }

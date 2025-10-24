@@ -14,7 +14,232 @@ const docTemplate = `{
     },
     "host": "{{.Host}}",
     "basePath": "{{.BasePath}}",
-    "paths": {}
+    "paths": {
+        "/expenses": {
+            "post": {
+                "description": "Create an new expenses",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "expenses"
+                ],
+                "summary": "Create expense",
+                "parameters": [
+                    {
+                        "description": "New expense",
+                        "name": "body",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/controller.CreateInput"
+                        }
+                    }
+                ],
+                "responses": {}
+            }
+        },
+        "/expenses/all": {
+            "get": {
+                "description": "get all expenses",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "expenses"
+                ],
+                "summary": "read all expense",
+                "responses": {}
+            }
+        },
+        "/expenses/category": {
+            "get": {
+                "description": "user can get expense by category",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "expenses"
+                ],
+                "summary": "get expense by category",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "category",
+                        "name": "category",
+                        "in": "query",
+                        "required": true
+                    }
+                ],
+                "responses": {}
+            }
+        },
+        "/expenses/category/all": {
+            "get": {
+                "description": "get all categories",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "categories"
+                ],
+                "summary": "show all categories",
+                "responses": {}
+            }
+        },
+        "/expenses/date": {
+            "get": {
+                "description": "get expenses by date",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "expenses"
+                ],
+                "summary": "get expense by date",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Start date (YYYY-MM-DD)",
+                        "name": "from",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "End date (YYYY-MM-DD)",
+                        "name": "to",
+                        "in": "query",
+                        "required": true
+                    }
+                ],
+                "responses": {}
+            }
+        },
+        "/expenses/{id}": {
+            "get": {
+                "description": "get single expense by id",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "expenses"
+                ],
+                "summary": "get single expense",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Expense ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {}
+            },
+            "delete": {
+                "description": "delete expense by id",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "expenses"
+                ],
+                "summary": "delete expense",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "expense id",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {}
+            },
+            "patch": {
+                "description": "update amount by id",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "expenses"
+                ],
+                "summary": "update expense amount",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Expense ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "New amount",
+                        "name": "body",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/controller.UpdateAmount"
+                        }
+                    }
+                ],
+                "responses": {}
+            }
+        }
+    },
+    "definitions": {
+        "controller.CreateInput": {
+            "type": "object",
+            "properties": {
+                "amount": {
+                    "type": "number",
+                    "format": "float64"
+                },
+                "category": {
+                    "type": "string"
+                },
+                "date": {
+                    "type": "string"
+                },
+                "note": {
+                    "type": "string"
+                }
+            }
+        },
+        "controller.UpdateAmount": {
+            "type": "object",
+            "properties": {
+                "amount": {
+                    "type": "number"
+                }
+            }
+        }
+    }
 }`
 
 // SwaggerInfo holds exported Swagger Info so clients can modify it

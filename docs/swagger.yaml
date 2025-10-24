@@ -1,4 +1,156 @@
+definitions:
+  controller.CreateInput:
+    properties:
+      amount:
+        format: float64
+        type: number
+      category:
+        type: string
+      date:
+        type: string
+      note:
+        type: string
+    type: object
+  controller.UpdateAmount:
+    properties:
+      amount:
+        type: number
+    type: object
 info:
   contact: {}
-paths: {}
+paths:
+  /expenses:
+    post:
+      consumes:
+      - application/json
+      description: Create an new expenses
+      parameters:
+      - description: New expense
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/controller.CreateInput'
+      produces:
+      - application/json
+      responses: {}
+      summary: Create expense
+      tags:
+      - expenses
+  /expenses/{id}:
+    delete:
+      consumes:
+      - application/json
+      description: delete expense by id
+      parameters:
+      - description: expense id
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses: {}
+      summary: delete expense
+      tags:
+      - expenses
+    get:
+      consumes:
+      - application/json
+      description: get single expense by id
+      parameters:
+      - description: Expense ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses: {}
+      summary: get single expense
+      tags:
+      - expenses
+    patch:
+      consumes:
+      - application/json
+      description: update amount by id
+      parameters:
+      - description: Expense ID
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: New amount
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/controller.UpdateAmount'
+      produces:
+      - application/json
+      responses: {}
+      summary: update expense amount
+      tags:
+      - expenses
+  /expenses/all:
+    get:
+      consumes:
+      - application/json
+      description: get all expenses
+      produces:
+      - application/json
+      responses: {}
+      summary: read all expense
+      tags:
+      - expenses
+  /expenses/category:
+    get:
+      consumes:
+      - application/json
+      description: user can get expense by category
+      parameters:
+      - description: category
+        in: query
+        name: category
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses: {}
+      summary: get expense by category
+      tags:
+      - expenses
+  /expenses/category/all:
+    get:
+      consumes:
+      - application/json
+      description: get all categories
+      produces:
+      - application/json
+      responses: {}
+      summary: show all categories
+      tags:
+      - categories
+  /expenses/date:
+    get:
+      consumes:
+      - application/json
+      description: get expenses by date
+      parameters:
+      - description: Start date (YYYY-MM-DD)
+        in: query
+        name: from
+        required: true
+        type: string
+      - description: End date (YYYY-MM-DD)
+        in: query
+        name: to
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses: {}
+      summary: get expense by date
+      tags:
+      - expenses
 swagger: "2.0"
