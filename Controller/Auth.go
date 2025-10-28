@@ -42,7 +42,7 @@ func RegisterUser(c *gin.Context) {
 		Password: string(HashedPassword),
 	}
 
-	if err := db.Where("user_name = ?", input.Username).Find(&username).Error; err == nil {
+	if err := db.Where("user_name = ?", input.Username).First(&username).Error; err == nil {
 		c.JSON(http.StatusConflict, gin.H{"error": "username is not avalable"})
 		return
 	}
