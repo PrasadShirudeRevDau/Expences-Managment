@@ -17,9 +17,10 @@ type UpdateAmount struct {
 //@Tags expenses
 //@Accept json
 //@Produce json
+//@Security BearerAuth
 //@Param id path string true "Expense ID"
 //@Param body body UpdateAmount true "New amount"
-//@Router /expenses/{id} [patch]
+//@Router /api/expenses/{id} [patch]
 func UpdateExpences(c *gin.Context) {
 
 	db := config.DatabaseConnection()
