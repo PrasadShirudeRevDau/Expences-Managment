@@ -23,7 +23,7 @@ type CreateInput struct {
 //@Produce json
 //@Security BearerAuth
 //@Param body body CreateInput true "New expense"
-//@Router /api/expenses [post]
+//@Router /expenses [post]
 func CreateExpenses(c *gin.Context) {
 	db := config.DatabaseConnection()
 	var input CreateInput

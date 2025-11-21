@@ -4,19 +4,26 @@ import (
 	config "ExpencesManagment/Config"
 	routes "ExpencesManagment/Routes"
 	_ "ExpencesManagment/docs"
+	"fmt"
+	"time"
+
 	swaggerFiles "github.com/swaggo/files"
-    ginSwagger "github.com/swaggo/gin-swagger"
-	
+	ginSwagger "github.com/swaggo/gin-swagger"
 )
+
 // @securityDefinitions.apikey BearerAuth
 // @in header
 // @name Authorization
 // @description Type "Bearer" followed by a space and JWT token.
 
 func main() {
-	config.DatabaseConnection()
 
+	config.DatabaseConnection()
+	CurrentTime:= time.Now()
+	
+	fmt.Print(CurrentTime.Format("2006-01-02"))
 	r:=routes.SetupRouter()
 	r.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
 	r.Run(":8080")
+	
 }

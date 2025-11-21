@@ -4,7 +4,198 @@
         "contact": {}
     },
     "paths": {
-        "/api/expenses": {
+        "/analytics/category": {
+            "get": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "get expenses total as per category",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "analytics"
+                ],
+                "summary": "get total expense per category",
+                "responses": {}
+            }
+        },
+        "/analytics/permonth": {
+            "get": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "get expenses total how many you have spend in a month",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "analytics"
+                ],
+                "summary": "get expenses summary per month",
+                "parameters": [
+                    {
+                        "enum": [
+                            "January",
+                            "February",
+                            "March",
+                            "April",
+                            "May",
+                            "June",
+                            "July",
+                            "August",
+                            "September",
+                            "October",
+                            "November",
+                            "December"
+                        ],
+                        "type": "string",
+                        "description": "month",
+                        "name": "months",
+                        "in": "query",
+                        "required": true
+                    }
+                ],
+                "responses": {}
+            }
+        },
+        "/analytics/range": {
+            "get": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "get expenses total as per date range",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "analytics"
+                ],
+                "summary": "get total expense by date",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "from date",
+                        "name": "from",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "to date",
+                        "name": "to",
+                        "in": "query",
+                        "required": true
+                    }
+                ],
+                "responses": {}
+            }
+        },
+        "/analytics/summary": {
+            "get": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "get expenses summary as per daily/weekly/monthly",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "analytics"
+                ],
+                "summary": "get summary of expense by monthly/daly/weekly",
+                "parameters": [
+                    {
+                        "enum": [
+                            "daily",
+                            "weekly",
+                            "monthly"
+                        ],
+                        "type": "string",
+                        "description": "Period",
+                        "name": "period",
+                        "in": "query",
+                        "required": true
+                    }
+                ],
+                "responses": {}
+            }
+        },
+        "/auth/Login": {
+            "post": {
+                "description": "authenticate the user",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "user"
+                ],
+                "summary": "authenticate the user",
+                "parameters": [
+                    {
+                        "description": "Login user",
+                        "name": "body",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/middlewares.UserAuth"
+                        }
+                    }
+                ],
+                "responses": {}
+            }
+        },
+        "/auth/register": {
+            "post": {
+                "description": "Create an new user",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "user"
+                ],
+                "summary": "Create user",
+                "parameters": [
+                    {
+                        "description": "New user",
+                        "name": "body",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/middlewares.UserAuth"
+                        }
+                    }
+                ],
+                "responses": {}
+            }
+        },
+        "/expenses": {
             "post": {
                 "security": [
                     {
@@ -36,7 +227,7 @@
                 "responses": {}
             }
         },
-        "/api/expenses/all": {
+        "/expenses/all": {
             "get": {
                 "security": [
                     {
@@ -57,7 +248,7 @@
                 "responses": {}
             }
         },
-        "/api/expenses/category/all": {
+        "/expenses/category/all": {
             "get": {
                 "security": [
                     {
@@ -78,7 +269,7 @@
                 "responses": {}
             }
         },
-        "/api/expenses/filter": {
+        "/expenses/filter": {
             "get": {
                 "security": [
                     {
@@ -125,7 +316,7 @@
                 "responses": {}
             }
         },
-        "/api/expenses/{id}": {
+        "/expenses/{id}": {
             "get": {
                 "security": [
                     {
@@ -219,65 +410,6 @@
                 ],
                 "responses": {}
             }
-        },
-        "/auth/Login": {
-            "post": {
-                "security": [
-                    {
-                        "BearerAuth": []
-                    }
-                ],
-                "description": "authenticate the user",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "user"
-                ],
-                "summary": "authenticate the user",
-                "parameters": [
-                    {
-                        "description": "Login user",
-                        "name": "body",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "$ref": "#/definitions/controller.UserAuth"
-                        }
-                    }
-                ],
-                "responses": {}
-            }
-        },
-        "/auth/register": {
-            "post": {
-                "description": "Create an new user",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "user"
-                ],
-                "summary": "Create user",
-                "parameters": [
-                    {
-                        "description": "New user",
-                        "name": "body",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "$ref": "#/definitions/controller.UserAuth"
-                        }
-                    }
-                ],
-                "responses": {}
-            }
         }
     },
     "definitions": {
@@ -307,7 +439,7 @@
                 }
             }
         },
-        "controller.UserAuth": {
+        "middlewares.UserAuth": {
             "type": "object",
             "properties": {
                 "password": {

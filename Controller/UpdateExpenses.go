@@ -1,7 +1,6 @@
 package controller
 
 import (
-	config "ExpencesManagment/Config"
 	models "ExpencesManagment/Models"
 	"net/http"
 
@@ -20,17 +19,22 @@ type UpdateAmount struct {
 //@Security BearerAuth
 //@Param id path string true "Expense ID"
 //@Param body body UpdateAmount true "New amount"
-//@Router /api/expenses/{id} [patch]
+//@Router /expenses/{id} [patch]
 func UpdateExpences(c *gin.Context) {
-
-	db := config.DatabaseConnection()
 	id := c.Param("id")
 	var input UpdateAmount
+	var expense models.Expense
 
 	if err := c.ShouldBindJSON(&input); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
+
+	if err:=db.Where("id = ?", id).First(&expense).Error;err !=nil {
+		c.JSON(http.StatusNotFound, gin.H{"error": "Expense not found"})
+		return
+	}
+
 	if err := db.Model(&models.Expense{}).Where("id = ?", id).Update("amount", input.Amount).Error; err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return

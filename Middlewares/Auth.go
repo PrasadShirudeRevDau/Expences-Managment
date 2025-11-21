@@ -1,7 +1,7 @@
-package controller
+package middlewares
 
 import (
-	middlewares "ExpencesManagment/Middlewares"
+	config "ExpencesManagment/Config"
 	models "ExpencesManagment/Models"
 	"net/http"
 
@@ -9,7 +9,7 @@ import (
 	"golang.org/x/crypto/bcrypt"
 )
 
-
+var db = config.DatabaseConnection()
 type UserAuth struct {
 	Username string
 	Password string
@@ -61,7 +61,6 @@ func RegisterUser(c *gin.Context) {
 // @Tags user
 // @Accept json
 // @Produce json
-// @Security BearerAuth
 // @Param body body UserAuth true "Login user"
 // @Router /auth/Login [post]
 func LoginUser(c *gin.Context) {
@@ -84,7 +83,7 @@ func LoginUser(c *gin.Context) {
 		return
 	}
 
-	token, err :=middlewares.GenerateJWT(user.UserID,user.UserName)
+	token, err :=GenerateJWT(user.UserID,user.UserName)
 	if err !=nil {
 		c.JSON(http.StatusInternalServerError,gin.H{"error":"failed to generate token"})
 		return

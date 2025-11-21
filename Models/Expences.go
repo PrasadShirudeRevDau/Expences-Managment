@@ -16,7 +16,7 @@ type Expense struct {
 	UserID    uint		`json:"user_id" gorm:"not null"`
 	Amount     float64 `json:"amount"`
 	Category   ExpenseCategory `gorm:"type:enum('Housing','Utilities','Transportation','Food_Groceries','Health_Fitness','Entertainment','Education','Clothing','Personal_Care','Gifts_Donation','Travel_Vacation','Insurance','Miscellaneous');"`
-	Date       time.Time `json:"date"`
+	Date       time.Time `json:"date" gorm:"type:date"`
 	Note       string	`json:"note"`
 	CreatedAt time.Time `json:"created_at"`
 	UpdatedAt  time.Time `json:"updated_at"`

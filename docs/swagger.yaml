@@ -16,7 +16,7 @@ definitions:
       amount:
         type: number
     type: object
-  controller.UserAuth:
+  middlewares.UserAuth:
     properties:
       password:
         type: string
@@ -56,7 +56,135 @@ definitions:
 info:
   contact: {}
 paths:
-  /api/expenses:
+  /analytics/category:
+    get:
+      consumes:
+      - application/json
+      description: get expenses total as per category
+      produces:
+      - application/json
+      responses: {}
+      security:
+      - BearerAuth: []
+      summary: get total expense per category
+      tags:
+      - analytics
+  /analytics/permonth:
+    get:
+      consumes:
+      - application/json
+      description: get expenses total how many you have spend in a month
+      parameters:
+      - description: month
+        enum:
+        - January
+        - February
+        - March
+        - April
+        - May
+        - June
+        - July
+        - August
+        - September
+        - October
+        - November
+        - December
+        in: query
+        name: months
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses: {}
+      security:
+      - BearerAuth: []
+      summary: get expenses summary per month
+      tags:
+      - analytics
+  /analytics/range:
+    get:
+      consumes:
+      - application/json
+      description: get expenses total as per date range
+      parameters:
+      - description: from date
+        in: query
+        name: from
+        required: true
+        type: string
+      - description: to date
+        in: query
+        name: to
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses: {}
+      security:
+      - BearerAuth: []
+      summary: get total expense by date
+      tags:
+      - analytics
+  /analytics/summary:
+    get:
+      consumes:
+      - application/json
+      description: get expenses summary as per daily/weekly/monthly
+      parameters:
+      - description: Period
+        enum:
+        - daily
+        - weekly
+        - monthly
+        in: query
+        name: period
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses: {}
+      security:
+      - BearerAuth: []
+      summary: get summary of expense by monthly/daly/weekly
+      tags:
+      - analytics
+  /auth/Login:
+    post:
+      consumes:
+      - application/json
+      description: authenticate the user
+      parameters:
+      - description: Login user
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/middlewares.UserAuth'
+      produces:
+      - application/json
+      responses: {}
+      summary: authenticate the user
+      tags:
+      - user
+  /auth/register:
+    post:
+      consumes:
+      - application/json
+      description: Create an new user
+      parameters:
+      - description: New user
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/middlewares.UserAuth'
+      produces:
+      - application/json
+      responses: {}
+      summary: Create user
+      tags:
+      - user
+  /expenses:
     post:
       consumes:
       - application/json
@@ -76,7 +204,7 @@ paths:
       summary: Create expense
       tags:
       - expenses
-  /api/expenses/{id}:
+  /expenses/{id}:
     delete:
       consumes:
       - application/json
@@ -137,7 +265,7 @@ paths:
       summary: update expense amount
       tags:
       - expenses
-  /api/expenses/all:
+  /expenses/all:
     get:
       consumes:
       - application/json
@@ -150,7 +278,7 @@ paths:
       summary: read all expense
       tags:
       - expenses
-  /api/expenses/category/all:
+  /expenses/category/all:
     get:
       consumes:
       - application/json
@@ -163,7 +291,7 @@ paths:
       summary: show all categories
       tags:
       - categories
-  /api/expenses/filter:
+  /expenses/filter:
     get:
       consumes:
       - application/json
@@ -193,44 +321,6 @@ paths:
       summary: get expense
       tags:
       - expenses
-  /auth/Login:
-    post:
-      consumes:
-      - application/json
-      description: authenticate the user
-      parameters:
-      - description: Login user
-        in: body
-        name: body
-        required: true
-        schema:
-          $ref: '#/definitions/controller.UserAuth'
-      produces:
-      - application/json
-      responses: {}
-      security:
-      - BearerAuth: []
-      summary: authenticate the user
-      tags:
-      - user
-  /auth/register:
-    post:
-      consumes:
-      - application/json
-      description: Create an new user
-      parameters:
-      - description: New user
-        in: body
-        name: body
-        required: true
-        schema:
-          $ref: '#/definitions/controller.UserAuth'
-      produces:
-      - application/json
-      responses: {}
-      summary: Create user
-      tags:
-      - user
 securityDefinitions:
   BearerAuth:
     description: Type "Bearer" followed by a space and JWT token.

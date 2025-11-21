@@ -17,7 +17,7 @@ var db = config.DatabaseConnection()
 // @Accept json
 // @Produce json
 // @Security BearerAuth
-// @Router /api/expenses/all [get]
+// @Router /expenses/all [get]
 func GetAllExpences(c *gin.Context) {
 	userID := c.GetUint("user_id")
 	var expense []models.Expense
@@ -26,6 +26,11 @@ func GetAllExpences(c *gin.Context) {
 	if result.Error != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": result.Error.Error()})
 		return
+	}
+
+	if len(expense)==0{
+		c.JSON(http.StatusNotFound,gin.H{"error":"no record found"})
+		return 
 	}
 	c.JSON(http.StatusOK, expense)
 }
@@ -38,7 +43,7 @@ func GetAllExpences(c *gin.Context) {
 // @Produce json
 // @Security BearerAuth
 // @Param id path string true "Expense ID"
-// @Router /api/expenses/{id} [get]
+// @Router /expenses/{id} [get]
 func GetExpenseById(c *gin.Context) {
 	id := c.Param("id")
 	var expense models.Expense
@@ -61,7 +66,7 @@ func GetExpenseById(c *gin.Context) {
 // @Param from query string false "Start date (YYYY-MM-DD)"
 // @Param to query string false "End date (YYYY-MM-DD)"
 // @Param category query string false "category"
-// @Router /api/expenses/filter [get]
+// @Router /expenses/filter [get]
 func GetExpenseByFilter(c *gin.Context) {
 	id := c.Query("id")
 	From := c.Query("from")
